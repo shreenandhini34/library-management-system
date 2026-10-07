@@ -1,0 +1,39 @@
+<h1>Issue a Book</h1>
+
+<?php if ($message): ?>
+    <div class="alert alert-danger"><?= $this->escapeHtml($message) ?></div>
+<?php endif; ?>
+
+<?php if (!$books): ?>
+    <div class="alert alert-warning">There are no available books to issue.</div>
+<?php else: ?>
+<form method="post" action="<?= $this->url('issues', ['action' => 'add']) ?>">
+    <input type="hidden" name="_csrf" value="<?= $this->escapeHtmlAttr($csrf) ?>">
+
+    <div class="form-group">
+        <label for="book_id">Book</label>
+        <select id="book_id" class="form-control" name="book_id" required>
+            <option value="">Select a book</option>
+            <?php foreach ($books as $book): ?>
+                <option value="<?= (int) $book['BookID'] ?>" <?= (int) $bookId === (int) $book['BookID'] ? 'selected' : '' ?>>
+                    <?= $this->escapeHtml($book['Title']) ?> — <?= $this->escapeHtml($book['Author']) ?> (<?= (int) $book['AvailableQuantity'] ?> available)
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="user_id">User</label>
+        <select id="user_id" class="form-control" name="user_id" required>
+            <?php foreach ($users as $user): ?>
+                <option value="<?= (int) $user['UserID'] ?>" <?= (int) $userId === (int) $user['UserID'] ? 'selected' : '' ?>>
+                    <?= $this->escapeHtml($user['Username']) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Issue Book</button>
+    <a class="btn btn-secondary" href="<?= $this->url('issues') ?>">Cancel</a>
+</form>
+<?php endif; ?>

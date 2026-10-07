@@ -1,0 +1,43 @@
+CREATE DATABASE IF NOT EXISTS LibrarySystem
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE LibrarySystem;
+
+CREATE TABLE IF NOT EXISTS Users (
+    UserID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Username VARCHAR(100) NOT NULL,
+    Password VARCHAR(255) NOT NULL,
+    PRIMARY KEY (UserID),
+    UNIQUE KEY uq_users_username (Username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS Books (
+    BookID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Title VARCHAR(255) NOT NULL,
+    Author VARCHAR(255) NOT NULL,
+    Quantity INT UNSIGNED NOT NULL DEFAULT 0,
+    AvailableQuantity INT UNSIGNED NOT NULL DEFAULT 0,
+    IsDeleted TINYINT(1) NOT NULL DEFAULT 0,
+    PRIMARY KEY (BookID),
+    KEY idx_books_deleted (IsDeleted)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS Issues (
+    IssueID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    BookID INT UNSIGNED NOT NULL,
+    UserID INT UNSIGNED NOT NULL,
+    IssueDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ReturnDate DATETIME NULL,
+    IsReturned TINYINT(1) NOT NULL DEFAULT 0,
+    PRIMARY KEY (IssueID),
+    KEY idx_issues_book (BookID),
+    KEY idx_issues_user (UserID),
+    KEY idx_issues_returned (IsReturned),
+    CONSTRAINT fk_issues_book FOREIGN KEY (BookID) REFERENCES Books (BookID),
+    CONSTRAINT fk_issues_user FOREIGN KEY (UserID) REFERENCES Users (UserID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO Users (Username, Password)
+SELECT 'admin', '$2y$12$H9rUBibfZ1mgQmOscb1yFuBVuQhHs7VGt1ypTqMj5oYDyniKmIR4a'
+WHERE NOT EXISTS (SELECT 1 FROM Users WHERE Username = 'admin');

@@ -1,0 +1,548 @@
+<?php
+$books = $books ?? [];
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Book Stock - Library Management System</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- jqWidgets CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/jqwidgets-scripts@14.0.0/jqwidgets/styles/jqx.base.css"
+        type="text/css"
+    />
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/jqwidgets-scripts@14.0.0/jqwidgets/styles/jqx.material.css"
+        type="text/css"
+    />
+
+    <!-- jqWidgets JavaScript -->
+    <script src="https://unpkg.com/jqwidgets-scripts@14.0.0/jqwidgets/jqxcore.js"></script>
+    <script src="https://unpkg.com/jqwidgets-scripts@14.0.0/jqwidgets/jqxdata.js"></script>
+    <script src="https://unpkg.com/jqwidgets-scripts@14.0.0/jqwidgets/jqxbuttons.js"></script>
+    <script src="https://unpkg.com/jqwidgets-scripts@14.0.0/jqwidgets/jqxscrollbar.js"></script>
+    <script src="https://unpkg.com/jqwidgets-scripts@14.0.0/jqwidgets/jqxmenu.js"></script>
+    <script src="https://unpkg.com/jqwidgets-scripts@14.0.0/jqwidgets/jqxlistbox.js"></script>
+    <script src="https://unpkg.com/jqwidgets-scripts@14.0.0/jqwidgets/jqxdropdownlist.js"></script>
+    <script src="https://unpkg.com/jqwidgets-scripts@14.0.0/jqwidgets/jqxgrid.js"></script>
+    <script src="https://unpkg.com/jqwidgets-scripts@14.0.0/jqwidgets/jqxgrid.filter.js"></script>
+    <script src="https://unpkg.com/jqwidgets-scripts@14.0.0/jqwidgets/jqxgrid.sort.js"></script>
+    <script src="https://unpkg.com/jqwidgets-scripts@14.0.0/jqwidgets/jqxgrid.selection.js"></script>
+    <script src="https://unpkg.com/jqwidgets-scripts@14.0.0/jqwidgets/jqxgrid.pager.js"></script>
+    <script src="https://unpkg.com/jqwidgets-scripts@14.0.0/jqwidgets/jqxgrid.columnsresize.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f6fa;
+            color: #333;
+        }
+
+        .page-container {
+            width: 95%;
+            max-width: 1400px;
+            margin: 30px auto;
+        }
+
+        .page-header {
+            background: #ffffff;
+            padding: 25px 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .page-header h1 {
+            margin: 0 0 8px 0;
+            font-size: 28px;
+        }
+
+        .page-header p {
+            margin: 0;
+            color: #666;
+            font-size: 15px;
+        }
+
+        .grid-container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        #bookStockGrid {
+            width: 100%;
+        }
+
+        .stock-available {
+            color: #198754;
+            font-weight: bold;
+        }
+
+        .stock-unavailable {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .status-available {
+            color: #198754;
+            font-weight: bold;
+        }
+
+        .status-unavailable {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .buy-button {
+            display: inline-block;
+            padding: 6px 14px;
+            background: #0d6efd;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .buy-button:hover {
+            background: #0b5ed7;
+            color: white;
+            text-decoration: none;
+        }
+
+        .disabled-button {
+            display: inline-block;
+            padding: 6px 14px;
+            background: #adb5bd;
+            color: white;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page-container">
+
+    <div class="page-header">
+        <h1>Library Management System</h1>
+        <p>Book Stock</p>
+        <p>View and manage the current book stock.</p>
+    </div>
+
+    <div class="grid-container">
+
+        <div id="bookStockGrid"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+$(document).ready(function () {
+
+    /*
+     * ---------------------------------------------------------
+     * BOOK DATA FROM PHP
+     * ---------------------------------------------------------
+     */
+
+    var books = [
+
+        <?php
+        $displayId = 1;
+
+        foreach ($books as $book):
+
+            $stock = (int)($book['Stock'] ?? 0);
+
+            $status = $stock > 0
+                ? 'Available'
+                : 'Unavailable';
+
+        ?>
+
+        {
+            id: <?= $displayId ?>,
+
+            title: <?= json_encode(
+                (string)($book['Title'] ?? ''),
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            ) ?>,
+
+            author: <?= json_encode(
+                (string)($book['Author'] ?? ''),
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            ) ?>,
+
+            category: <?= json_encode(
+                (string)($book['Category'] ?? ''),
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            ) ?>,
+
+            stock: <?= $stock ?>,
+
+            status: <?= json_encode($status) ?>,
+
+            databaseId: <?= (int)($book['id'] ?? 0) ?>,
+
+            action: ""
+        },
+
+        <?php
+
+            $displayId++;
+
+        endforeach;
+        ?>
+
+    ];
+
+
+    /*
+     * ---------------------------------------------------------
+     * DATA SOURCE
+     * ---------------------------------------------------------
+     */
+
+    var source = {
+        datatype: "array",
+
+        localdata: books,
+
+        datafields: [
+
+            {
+                name: "id",
+                type: "number"
+            },
+
+            {
+                name: "title",
+                type: "string"
+            },
+
+            {
+                name: "author",
+                type: "string"
+            },
+
+            {
+                name: "category",
+                type: "string"
+            },
+
+            {
+                name: "stock",
+                type: "number"
+            },
+
+            {
+                name: "status",
+                type: "string"
+            },
+
+            {
+                name: "databaseId",
+                type: "number"
+            },
+
+            {
+                name: "action",
+                type: "string"
+            }
+
+        ]
+    };
+
+
+    /*
+     * ---------------------------------------------------------
+     * CREATE ADAPTER
+     * ---------------------------------------------------------
+     */
+
+    var dataAdapter = new $.jqx.dataAdapter(source);
+
+
+    /*
+     * ---------------------------------------------------------
+     * CREATE GRID
+     * ---------------------------------------------------------
+     */
+
+    $("#bookStockGrid").jqxGrid({
+
+        width: "100%",
+
+        source: dataAdapter,
+
+        theme: "material",
+
+        pageable: true,
+
+        pagesize: 10,
+
+        autoheight: true,
+
+        sortable: true,
+
+        filterable: true,
+
+        columnsresize: true,
+
+        selectionmode: "singlerow",
+
+        columns: [
+
+            /*
+             * ID
+             */
+            {
+                text: "ID",
+
+                datafield: "id",
+
+                width: 70,
+
+                cellsalign: "center",
+
+                align: "center"
+            },
+
+
+            /*
+             * TITLE
+             */
+            {
+                text: "Title",
+
+                datafield: "title",
+
+                minwidth: 200,
+
+                align: "center"
+            },
+
+
+            /*
+             * AUTHOR
+             */
+            {
+                text: "Author",
+
+                datafield: "author",
+
+                minwidth: 180,
+
+                align: "center"
+            },
+
+
+            /*
+             * CATEGORY
+             */
+            {
+                text: "Category",
+
+                datafield: "category",
+
+                minwidth: 150,
+
+                align: "center"
+            },
+
+
+            /*
+             * STOCK
+             */
+            {
+                text: "Stock",
+
+                datafield: "stock",
+
+                width: 100,
+
+                cellsalign: "center",
+
+                align: "center",
+
+                cellsrenderer: function (
+                    row,
+                    column,
+                    value
+                ) {
+
+                    var stockValue = parseInt(value, 10);
+
+                    if (stockValue > 0) {
+
+                        return '<div style="padding: 8px; text-align: center;" class="stock-available">'
+                            + stockValue +
+                            '</div>';
+
+                    }
+
+                    return '<div style="padding: 8px; text-align: center;" class="stock-unavailable">'
+                        + stockValue +
+                        '</div>';
+                }
+            },
+
+
+            /*
+             * STATUS
+             *
+             * IMPORTANT:
+             * This uses "status", NOT "stock".
+             * This fixes the duplicate datafield error.
+             */
+            {
+                text: "Status",
+
+                datafield: "status",
+
+                width: 130,
+
+                cellsalign: "center",
+
+                align: "center",
+
+                cellsrenderer: function (
+                    row,
+                    column,
+                    value
+                ) {
+
+                    if (value === "Available") {
+
+                        return '<div style="padding: 8px; text-align: center;" class="status-available">'
+                            + 'Available' +
+                            '</div>';
+
+                    }
+
+                    return '<div style="padding: 8px; text-align: center;" class="status-unavailable">'
+                        + 'Unavailable' +
+                        '</div>';
+                }
+            },
+
+
+            /*
+             * ACTION
+             */
+            {
+                text: "Action",
+
+                datafield: "action",
+
+                width: 130,
+
+                cellsalign: "center",
+
+                align: "center",
+
+                sortable: false,
+
+                filterable: false,
+
+                cellsrenderer: function (
+                    row,
+                    column,
+                    value,
+                    defaultHtml,
+                    columnProperties,
+                    rowData
+                ) {
+
+                    var databaseId = rowData.databaseId;
+
+                    var stockValue = parseInt(
+                        rowData.stock,
+                        10
+                    );
+
+
+                    /*
+                     * No database ID
+                     */
+                    if (!databaseId) {
+
+                        return '<div style="padding: 5px; text-align: center;">'
+                            + '<span class="disabled-button">Unavailable</span>'
+                            + '</div>';
+                    }
+
+
+                    /*
+                     * No stock
+                     */
+                    if (stockValue <= 0) {
+
+                        return '<div style="padding: 5px; text-align: center;">'
+                            + '<span class="disabled-button">Out of Stock</span>'
+                            + '</div>';
+                    }
+
+
+                    /*
+                     * BUY URL
+                     */
+                    var buyUrl = <?= json_encode(
+                        $this->url('books-buy')
+                    ) ?>;
+
+
+                    /*
+                     * Add ID to URL
+                     */
+                    buyUrl = buyUrl.replace(
+                        /\/$/,
+                        ''
+                    );
+
+                    buyUrl += '/'
+                        + encodeURIComponent(databaseId);
+
+
+                    return '<div style="padding: 5px; text-align: center;">'
+                        + '<a href="'
+                        + buyUrl
+                        + '" class="buy-button">'
+                        + 'Buy'
+                        + '</a>'
+                        + '</div>';
+                }
+            }
+
+        ]
+
+    });
+
+});
+
+</script>
+
+</body>
+</html>

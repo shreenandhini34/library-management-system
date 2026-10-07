@@ -1,0 +1,53 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Book Issues</h1>
+    <a class="btn btn-primary" href="<?= $this->url('issues', ['action' => 'add']) ?>">Issue a Book</a>
+</div>
+
+<div class="table-responsive">
+<table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+    <tr>
+        <th>ID</th>
+        <th>Book</th>
+        <th>User</th>
+        <th>Issue Date</th>
+        <th>Return Date</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php if (!$issues): ?>
+        <tr><td colspan="7" class="text-center">No issue records found.</td></tr>
+    <?php endif; ?>
+    <?php foreach ($issues as $issue): ?>
+        <tr>
+            <td><?= (int) $issue['IssueID'] ?></td>
+            <td><?= $this->escapeHtml($issue['Title']) ?></td>
+            <td><?= $this->escapeHtml($issue['Username']) ?></td>
+            <td><?= $this->escapeHtml($issue['IssueDate']) ?></td>
+            <td><?= $issue['ReturnDate'] ? $this->escapeHtml($issue['ReturnDate']) : '-' ?></td>
+            <td>
+                <?php if ((int) $issue['IsReturned'] === 1): ?>
+                    <span class="badge badge-success">Returned</span>
+                <?php else: ?>
+                    <span class="badge badge-warning">Issued</span>
+                <?php endif; ?>
+            </td>
+            <td>
+                <?php if ((int) $issue['IsReturned'] === 0): ?>
+                    <form method="post" action="<?= $this->url('issues', ['action' => 'return', 'id' => $issue['IssueID']]) ?>" onsubmit="return confirm('Mark this book as returned?');">
+                        <input type="hidden" name="_csrf" value="<?= $this->escapeHtmlAttr($csrfToken) ?>">
+                        <button class="btn btn-sm btn-outline-success" type="submit">Return</button>
+                    </form>
+                <?php else: ?>
+                    -
+                <?php endif; ?>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    </tbody>
+</table>
+</div>
+
+<a href="<?= $this->url('dashboard') ?>">&larr; Back to Dashboardkuggukgk</a>

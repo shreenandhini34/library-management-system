@@ -1,0 +1,42 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Books</h1>
+    <a class="btn btn-primary" href="<?= $this->url('books', ['action' => 'add']) ?>">Add New Book</a>
+</div>
+
+<div class="table-responsive">
+<table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Quantity</th>
+        <th>Available</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php if (!$books): ?>
+        <tr><td colspan="6" class="text-center">No books found.</td></tr>
+    <?php endif; ?>
+    <?php foreach ($books as $book): ?>
+        <tr>
+            <td><?= (int) $book['BookID'] ?></td>
+            <td><?= $this->escapeHtml($book['Title']) ?></td>
+            <td><?= $this->escapeHtml($book['Author']) ?></td>
+            <td><?= (int) $book['Quantity'] ?></td>
+            <td><?= (int) $book['AvailableQuantity'] ?></td>
+            <td>
+                <a class="btn btn-sm btn-outline-primary" href="<?= $this->url('books', ['action' => 'edit', 'id' => $book['BookID']]) ?>">Edit</a>
+                <form method="post" action="<?= $this->url('books', ['action' => 'delete', 'id' => $book['BookID']]) ?>" class="d-inline" onsubmit="return confirm('Delete this book?');">
+                    <input type="hidden" name="_csrf" value="<?= $this->escapeHtmlAttr($this->csrfToken) ?>">
+                    <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    </tbody>
+</table>
+</div>
+
+<a href="<?= $this->url('dashboard') ?>">&larr; Back to Dashboard55555</a>

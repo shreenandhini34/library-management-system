@@ -1,0 +1,96 @@
+<h1>Edit Book</h1>
+
+<?php if (!empty($error)): ?>
+
+    <div class="alert alert-danger">
+        <?= $this->escapeHtml($error) ?>
+    </div>
+
+<?php endif; ?>
+
+<form method="post">
+
+    <div class="mb-3">
+
+        <label for="Title" class="form-label">
+            Title
+        </label>
+
+        <input
+            type="text"
+            name="Title"
+            id="Title"
+            class="form-control"
+            value="<?= $this->escapeHtmlAttr($title ?? '') ?>"
+            required
+        >
+
+    </div>
+
+    <div class="mb-3">
+
+        <label for="Author" class="form-label">
+            Author
+        </label>
+
+        <input
+            type="text"
+            name="Author"
+            id="Author"
+            class="form-control"
+            value="<?= $this->escapeHtmlAttr($author ?? '') ?>"
+            required
+        >
+
+    </div>
+
+    <div class="mb-3">
+
+        <label for="Category" class="form-label">
+            Category
+        </label>
+
+        <input
+            type="text"
+            name="Category"
+            id="Category"
+            class="form-control"
+            value="<?= $this->escapeHtmlAttr($category ?? '') ?>"
+            required
+        >
+
+    </div>
+
+    <div class="mb-3">
+
+        <label for="Stock" class="form-label">
+            Stock
+        </label>
+
+        <input
+            type="number"
+            name="Stock"
+            id="Stock"
+            class="form-control"
+            min="0"
+            value="<?= $this->escapeHtmlAttr((string) ($stock ?? 0)) ?>"
+            required
+        >
+
+    </div>
+
+    <button
+        type="submit"
+        class="btn btn-primary"
+    >
+        Update Book
+    </button>
+
+    <a
+        href="<?= $this->url('books') ?>"
+        class="btn btn-secondary"
+    >
+        Cancel
+    </a>
+
+</form>
